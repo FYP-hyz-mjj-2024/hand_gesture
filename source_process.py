@@ -82,11 +82,10 @@ def log_detection_results(detection_result, save_path=None):
         file.write(data)
 
     with open(save_path, "a") as f:
-
+        log_write_file(f, f"\n\nFRAME-{time.time()}\n")
         for hand_idx, hand_landmarks in enumerate(detection_result.multi_hand_landmarks):
-            log_write_file(f, f"\n{time.time()}\n")
+            log_write_file(f, f"\nHAND-{hand_idx}\n")
             # Landmarks for a single hand
-            hand_landmarks_coord = []
             for ldmk_idx, landmark in enumerate(hand_landmarks.landmark):
                 this_landmark_name = landmark_name[ldmk_idx]
                 this_landmark_coord = ("{:.16f}".format(landmark.x), "{:.16f}".format(landmark.y), landmark.z)
@@ -107,7 +106,7 @@ def process_single_frame(frame, save_path=None, convert_to_rgb=False):
     # Detected Hand
     if result.multi_hand_landmarks:
         draw_detection_results(frame, result)
-        log_detection_results(result, save_path)
+        log_detection_results(result, save_path) if save_path else None
 
     cv2.imshow("Hand Detection", frame)
 

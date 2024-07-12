@@ -1,12 +1,21 @@
 
 # Hand Gesture Detection Demo using Mediapipe
 
-## To run this demo
+## Setup the demo
 
 1. Run `python -m venv hand_venv`
 2. Run `source hand_venv/bin/activate` if you use mac. Run `hand_venv/Scripts/activate` if you use windows.
 3. Run `pip install -r requirements.txt` to install openCV and mediapipe.
-4. Run `python main.py` to run the demo. Remember to allow this program to access your camera.
+
+## Run the demo
+### Video Mode
+Run `python main.py video data/source/<file_name>.mp4 data/landmarks/<output_file_name>.txt`. 
+
+### Camera Mode
+Run `python main.py camrea nn nn`. Remember to allow this program to access your camera.
+
+### Image Mode
+Work in progress.
 
 ## Project Structures
 ### `source_capture/`
