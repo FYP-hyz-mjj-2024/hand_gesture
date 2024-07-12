@@ -18,10 +18,16 @@ def _get_stream_source(source, w=640, h=480):
 
 @log
 def get_image_source(path):
+    """
+    Retrieves an image from the given path, and get an image object.
+    :param path: A path to a desired image.
+    :return: An image object.
+    """
     image = cv2.imread(path)
     return image
 
 
+@log
 def get_camera_source(w=640, h=480):
     """
     Initialize a camera source.
@@ -32,6 +38,7 @@ def get_camera_source(w=640, h=480):
     return _get_stream_source(0, w, h)
 
 
+@log
 def get_video_source(path, w=640, h=480):
     """
     Initialize a video source.

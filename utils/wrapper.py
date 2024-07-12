@@ -21,7 +21,7 @@ def log(func):
         if settings["log"]["CLEAN_CONSOLE"]:
             return func(*args, **kwargs)
 
-        print(log_divider)
+        print(f"\n{log_divider}\n{func.__name__}\n{log_divider}\n")
         print(log_before_call)
         val = func(*args, **kwargs)
         print(log_after_call)
