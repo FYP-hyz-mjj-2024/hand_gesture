@@ -111,8 +111,14 @@ def process_single_frame(frame, save_path=None, convert_to_rgb=False):
     cv2.imshow("Hand Detection", frame)
 
 
-def process_image(image):
-    process_single_frame(image)
+def process_image(frame, convert_to_rgb=False):
+    """
+    Process an image, including only one frame.
+    :param frame: The only frame in the image.
+    :param convert_to_rgb: Convert the image from BGR to RGB.
+    :return:
+    """
+    process_single_frame(frame, convert_to_rgb=convert_to_rgb)
     cv2.waitKey(0)
 
 

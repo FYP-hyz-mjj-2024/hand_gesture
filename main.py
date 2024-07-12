@@ -10,7 +10,7 @@ mode, src_path, save_path = args.get(1), args.get(2), args.get(3)
 
 def demo_image():
     frame = get_image_source(src_path)
-    process_image(frame)
+    process_image(frame, True)
 
 
 def demo_video():
