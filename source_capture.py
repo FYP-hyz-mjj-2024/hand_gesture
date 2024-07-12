@@ -1,4 +1,5 @@
 import cv2
+from utils.wrapper import log
 
 
 def _get_stream_source(source, w=640, h=480):
@@ -13,6 +14,12 @@ def _get_stream_source(source, w=640, h=480):
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     return cap
+
+
+@log
+def get_image_source(path):
+    image = cv2.imread(path)
+    return image
 
 
 def get_camera_source(w=640, h=480):

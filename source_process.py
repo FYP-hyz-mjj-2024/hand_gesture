@@ -54,14 +54,16 @@ def draw_detection_results(image, detection_result):
             mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2))
 
 
-def process_single_frame(frame):
+@log
+def process_single_frame(frame, convert_to_rgb=False):
     """
     Process a single frame, i.e. an image. Get the result and draw it on the canvas.
     :param frame: The image to be processed.
+    :param convert_to_rgb: Convert the image from BGR to RGB
     :return:
     """
 
-    result = get_detection_results(frame, True)
+    result = get_detection_results(frame, convert_to_rgb)
 
     # Detected Hand
     if result.multi_hand_landmarks:
@@ -70,6 +72,13 @@ def process_single_frame(frame):
     cv2.imshow("Hand Detection", frame)
 
 
+@log
+def process_image(image):
+    process_single_frame(image)
+    cv2.waitKey(0)
+
+
+@log
 def process_stream(cap, convert_to_rgb=False):
     """
     Process a stream, including a video or a camera capture.
@@ -82,5 +91,4 @@ def process_stream(cap, convert_to_rgb=False):
         if not success or cv2.waitKey(1) == 27:
             break
 
-        process_single_frame(frame)
-        cv2.imshow("Hand Detection", frame)
+        process_single_frame(frame, convert_to_rgb)
