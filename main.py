@@ -1,5 +1,5 @@
 import sys
-from source_capture import get_image_source, get_camera_source, get_video_source
+from source_capture import get_image_source, get_camera_source, get_video_source, get_virtual_camera_source
 from source_process import process_stream, process_image
 
 # _, mode, src_path, save_path = sys.argv
@@ -23,10 +23,17 @@ def demo_camera():
     process_stream(cap, save_path, True)
 
 
+def demo_virtual_camera():
+    cap = get_virtual_camera_source()
+    process_stream(cap, save_path, True)
+
+
 mode_func = {
     'image': demo_image,
     'video': demo_video,
-    'camera': demo_camera
+    'camera': demo_camera,
+    'virtual_camera': demo_virtual_camera,
 }
 
-mode_func[mode]()
+if __name__ == '__main__':
+    mode_func[mode]()

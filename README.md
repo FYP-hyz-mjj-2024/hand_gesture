@@ -17,6 +17,8 @@ Run `python main.py video <path_to_video> <path_to_txt_output>`.
 ### Camera Mode
 Run `python main.py camrea`. Remember to allow this program to access your camera.
 
+### Virtual Camera Mode
+Run `python main.py virtual_camera`. Remember to configure you virtual camera. It is recommended to use OBS.
 
 ## Project Structures
 ### `source_capture/`
