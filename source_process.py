@@ -3,6 +3,7 @@ import mediapipe as mp
 import time
 import os
 from utils.wrapper import log
+from utils.dictionaries import finger_colors, finger_indexes, landmark_name
 
 # Hand checking model
 mp_hands = mp.solutions.hands
@@ -10,25 +11,6 @@ hand = mp_hands.Hands()
 
 # Drawing utilities
 mp_drawing = mp.solutions.drawing_utils
-
-# Finger colors
-finger_colors = {
-    "thumb": (255, 0, 0),
-    "index": (0, 255, 0),
-    "middle": (0, 0, 255),
-    "ring": (255, 255, 0),
-    "pinky": (255, 0, 255)
-}
-
-# Finger Landmarks
-landmark_name = {
-    0: "WRIST"
-    , 1: "THUMB_CMC", 2: "THUMB_MCP", 3: "THUMB_IP", 4: "THUMB_TIP",
-    5: "INDEX_FINGER_MCP", 6: "INDEX_FINGER_PIP", 7: "INDEX_FINGER_DIP", 8: "INDEX_FINGER_TIP",
-    9: "MIDDLE_FINGER_MCP", 10: "MIDDLE_FINGER_PIP", 11: "MIDDLE_FINGER_DIP", 12: "MIDDLE_FINGER_TIP",
-    13: "RING_FINGER_MCP", 14: "RING_FINGER_PIP", 15: "RING_FINGER_DIP", 16: "RING_FINGER_TIP",
-    17: "PINKY_MCP", 18: "PINKY_PIP", 19: "PINKY_DIP", 20: "PINKY_TIP"
-}
 
 
 def get_detection_results(frame, convert_to_rgb=False):
@@ -55,14 +37,43 @@ def draw_detection_results(frame, detection_result):
     :param detection_result: The result given by get_detection_results.
     :return:
     """
+
+    # For all hands, draw their landmarks
     for hand_idx, hand_landmarks in enumerate(detection_result.multi_hand_landmarks):
-        # Draw all the connection lines
+        # Draw all the connection lines.
         mp_drawing.draw_landmarks(
             frame,
             hand_landmarks,
             mp_hands.HAND_CONNECTIONS,
             mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
-            mp_drawing.DrawingSpec(color=(0, 0, 255), thickness=2, circle_radius=2))
+            mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2))
+
+        # Draw each finger with custom settings
+        for finger_name, finger_indices in finger_indexes.items():
+            # Extract landmarks for the current finger
+            finger_landmarks = [hand_landmarks.landmark[i] for i in finger_indices]
+
+            # Draw landmarks of the current finger.
+            for landmark in finger_landmarks:
+                x, y = int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])
+                cv2.circle(frame, (x, y), 5, finger_colors[finger_name], -1)
+                # Add coordinates next to the landmark
+                cv2.putText(frame,
+                            f"({x}, {y})",
+                            (x + 10, y),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.3,
+                            finger_colors[finger_name],
+                            1)
+
+            # Draw connections between the landmarks of the current finger.
+            for i in range(len(finger_landmarks) - 1):
+                start = finger_landmarks[i]
+                end = finger_landmarks[i + 1]
+                x1, y1 = int(start.x * frame.shape[1]), int(start.y * frame.shape[0])
+                x2, y2 = int(end.x * frame.shape[1]), int(end.y * frame.shape[0])
+                cv2.line(frame, (x1, y1), (x2, y2), finger_colors[finger_name], 2)
+    return
 
 
 def log_detection_results(detection_result, save_path=None):
