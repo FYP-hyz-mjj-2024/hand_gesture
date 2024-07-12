@@ -12,7 +12,7 @@
 Run `python main.py video data/source/<file_name>.mp4 data/landmarks/<output_file_name>.txt`. 
 
 ### Camera Mode
-Run `python main.py camrea nn nn`. Remember to allow this program to access your camera.
+Run `python main.py camrea`. Remember to allow this program to access your camera.
 
 ### Image Mode
 Work in progress.
