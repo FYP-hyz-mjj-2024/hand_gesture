@@ -3,7 +3,9 @@ import mediapipe as mp
 import time
 import os
 from utils.wrapper import log
-from utils.dictionaries import finger_colors, finger_indexes, landmark_name
+from utils.dictionaries import finger_colors, finger_indexes, landmark_index2name, landmark_name2index as ln2i
+from utils.settings import settings
+from utils.functions import get_distance
 
 # Hand checking model
 mp_hands = mp.solutions.hands
@@ -38,6 +40,22 @@ def draw_detection_results(frame, detection_result):
     :return:
     """
 
+    def trigger_coord_display_with_gesture(disable_tips, enable_tips):
+        """
+        With a gesture, trigger the display of coordinates.
+        :param disable_tips:
+        :param enable_tips:
+        :return:
+        """
+        if get_distance(
+                hand_landmarks.landmark[ln2i[disable_tips[0]]],
+                hand_landmarks.landmark[ln2i[disable_tips[1]]]) < 0.05:
+            settings['draw']['SHOW_COORDINATES'] = False
+        elif get_distance(
+                hand_landmarks.landmark[ln2i[enable_tips[0]]],
+                hand_landmarks.landmark[ln2i[enable_tips[1]]]) < 0.05:
+            settings['draw']['SHOW_COORDINATES'] = True
+
     # For all hands, draw their landmarks
     for hand_idx, hand_landmarks in enumerate(detection_result.multi_hand_landmarks):
         # Draw all the connection lines.
@@ -47,6 +65,11 @@ def draw_detection_results(frame, detection_result):
             mp_hands.HAND_CONNECTIONS,
             mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
             mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2))
+
+        # When an "OK" gesture is made, disable the coordinate drawing.
+        trigger_coord_display_with_gesture(
+            ['THUMB_TIP', 'INDEX_FINGER_TIP'],
+            ['THUMB_TIP', 'PINKY_TIP'])
 
         # Draw each finger with custom settings
         for finger_name, finger_indices in finger_indexes.items():
@@ -64,12 +87,11 @@ def draw_detection_results(frame, detection_result):
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.3,
                             finger_colors[finger_name],
-                            1)
+                            1) if settings['draw']['SHOW_COORDINATES'] else None
 
             # Draw connections between the landmarks of the current finger.
             for i in range(len(finger_landmarks) - 1):
-                start = finger_landmarks[i]
-                end = finger_landmarks[i + 1]
+                start, end = finger_landmarks[i], finger_landmarks[i + 1]
                 x1, y1 = int(start.x * frame.shape[1]), int(start.y * frame.shape[0])
                 x2, y2 = int(end.x * frame.shape[1]), int(end.y * frame.shape[0])
                 cv2.line(frame, (x1, y1), (x2, y2), finger_colors[finger_name], 2)
@@ -98,7 +120,7 @@ def log_detection_results(detection_result, save_path=None):
             log_write_file(f, f"\nHAND-{hand_idx}\n")
             # Landmarks for a single hand
             for ldmk_idx, landmark in enumerate(hand_landmarks.landmark):
-                this_landmark_name = landmark_name[ldmk_idx]
+                this_landmark_name = landmark_index2name[ldmk_idx]
                 this_landmark_coord = ("{:.16f}".format(landmark.x), "{:.16f}".format(landmark.y), landmark.z)
                 log_write_file(f, f"{this_landmark_name} {' '*(17-len(this_landmark_name))} - {this_landmark_coord}\n")
 

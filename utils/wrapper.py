@@ -1,6 +1,5 @@
 from utils.settings import settings
 
-
 def log(func):
     """
     Using @log wrapper allows you to log data whenever a function is called.
